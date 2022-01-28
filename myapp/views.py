@@ -13,6 +13,7 @@ from django.http import JsonResponse
 
 class Register(APIView):
     def post(self, request, format=None):
+        # print(request.data)
         serializer = AccountSerializer(data=request.data)
         if serializer.is_valid():
             serializer.validated_data['password'] = make_password(serializer.validated_data['password'])
@@ -24,8 +25,7 @@ class Register(APIView):
 
         else:
             return JsonResponse({
-                'error_message': 'This email has already exist!',
-                'errors_code': 400,
+                'error_message': serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -50,12 +50,10 @@ class Login(APIView):
                 
             return Response({
                 'error_message': 'Email or password is incorrect!',
-                'error_code': 400
             }, status=status.HTTP_400_BAD_REQUEST)
             
         return Response({
             'error_messages': serializer.errors,
-            'error_code': 400
         }, status=status.HTTP_400_BAD_REQUEST)
 
 
